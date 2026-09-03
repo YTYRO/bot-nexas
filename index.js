@@ -11,11 +11,12 @@ const client = new Client({
         GatewayIntentBits.Guilds, 
         GatewayIntentBits.GuildMessages, 
         GatewayIntentBits.MessageContent,
-        GatewayIntentBits.GuildMembers
+        GatewayIntentBits.GuildMembers // مهم جداً لدخول الأعضاء الجدد
     ] 
 });
 
 const RATING_CHANNEL_ID = '1544823060580794520';
+const AUTO_ROLE_ID = '1545079030108389557'; // ID الرتبة التلقائية للأعضاء الجدد
 
 client.once('clientReady', async () => {
     console.log(`🚀 Ticket & Embed Dashboard is live at port ${port}`);
@@ -33,6 +34,21 @@ client.once('clientReady', async () => {
             console.error(`❌ Failed to register command in ${guild.name}:`, error);
         }
     });
+});
+
+// حدث دخول عضو جديد لإعطائه الرتبة تلقائياً
+client.on('guildMemberAdd', async member => {
+    try {
+        const role = member.guild.roles.cache.get(AUTO_ROLE_ID);
+        if (role) {
+            await member.roles.add(role);
+            console.log(`✅ تمت إضافة الرتبة ${role.name} للعضو ${member.user.tag}`);
+        } else {
+            console.log(`❌ لم يتم العثور على الرتبة بالـ ID المرفق.`);
+        }
+    } catch (error) {
+        console.error('خطأ أثناء إعطاء الرتبة التلقائية للعضو:', error);
+    }
 });
 
 app.get('/', (req, res) => {
@@ -227,7 +243,7 @@ client.on('interactionCreate', async interaction => {
 
         const embed = new EmbedBuilder()
             .setTitle('تقييم جديد')
-            .setColor('#7c3aed') // اللون البنفسجي المطلوب
+            .setColor('#7c3aed') // اللون البنفسجي
             .setDescription(`قام ${interaction.user} بـ **تقييم الخدمة** : ${starEmoji}\n\nرسالة من المشتري : ${comment}`)
             .setThumbnail(userAvatar)
             .setFooter({ text: 'Rotation Store' });
@@ -237,9 +253,7 @@ client.on('interactionCreate', async interaction => {
         try {
             const ratingChannel = await client.channels.fetch(RATING_CHANNEL_ID);
             if (ratingChannel) {
-                // إرسال الـ Embed باللون البنفسجي أولاً
                 await ratingChannel.send({ embeds: [embed] });
-                // إرسال الصورة كرسالة منفصلة تحتها مباشرة
                 await ratingChannel.send({ content: bannerImageUrl });
             }
         } catch (err) {
