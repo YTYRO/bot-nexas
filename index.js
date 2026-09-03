@@ -220,15 +220,18 @@ client.on('interactionCreate', async interaction => {
     if (interaction.isModalSubmit() && interaction.customId === 'rating_modal') {
         const stars = interaction.fields.getTextInputValue('rating_stars');
         const comment = interaction.fields.getTextInputValue('rating_comment') || 'لا يوجد تعليق';
+        const userAvatar = interaction.user.displayAvatarURL({ dynamic: true, size: 512 });
+
+        const starCount = parseInt(stars) || 5;
+        const starEmoji = '⭐'.repeat(Math.min(Math.max(starCount, 1), 5));
 
         const embed = new EmbedBuilder()
-            .setTitle('⭐ تقييم جديد للخدمة')
+            .setTitle('تقييم جديد 🌟')
             .setColor('#fbbf24')
-            .addFields(
-                { name: '👤 صاحب التقييم:', value: `${interaction.user} (${interaction.user.tag})`, inline: false },
-                { name: '🌟 التقييم:', value: `${stars} نجوم`, inline: true },
-                { name: '💬 الملاحظات:', value: comment, inline: false }
-            )
+            .setDescription(`قام ${interaction.user} بـ **تقييم الخدمة** : ${starEmoji}\n\nرسالة من المشتري : ${comment}`)
+            .setThumbnail(userAvatar)
+            .setImage('https://cdn.discordapp.com/attachments/1289291570234917007/1544880087621574826/Screenshot_30.png?ex=6a9a1d33&is=6a98cbb3&hm=fa6bca1c086721038bd95a2f15c2f537752baa191dcbfaa5ebf8dcd7ede3eff3&')
+            .setFooter({ text: 'Rotation Store', iconURL: interaction.guild.iconURL({ dynamic: true }) })
             .setTimestamp();
 
         try {
@@ -240,7 +243,7 @@ client.on('interactionCreate', async interaction => {
             console.error('خطأ في إرسال التقييم:', err);
         }
 
-        await interaction.reply({ content: 'شكراً لك! تم إرسال تقييمك بنجاح ❤️', ephemeral: true });
+        await interaction.reply({ content: '❤️ شكراً لك! تم إرسال تقييمك بنجاح', ephemeral: true });
     }
 });
 
