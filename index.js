@@ -240,4 +240,28 @@ client.on('interactionCreate', async interaction => {
             .setTitle('⭐ تقييم جديد للخدمة')
             .setColor('#fbbf24')
             .addFields(
-                { name: '👤
+                { name: '👤 صاحب التقييم:', value: `${interaction.user} (${interaction.user.tag})`, inline: false },
+                { name: '🌟 التقييم:', value: `${stars} نجوم`, inline: true },
+                { name: '💬 الملاحظات:', value: comment, inline: false }
+            )
+            .setTimestamp();
+
+        try {
+            const ratingChannel = await client.channels.fetch(RATING_CHANNEL_ID);
+            if (ratingChannel) {
+                await ratingChannel.send({ embeds: [embed] });
+            }
+        } catch (err) {
+            console.error('خطأ في إرسال التقييم:', err);
+        }
+
+        await interaction.reply({ content: 'شكراً لك! تم إرسال تقييمك بنجاح ❤️', ephemeral: true });
+    }
+});
+
+// تشغيل السيرفر والبوت
+app.listen(port, () => {
+    console.log(`Express server running on port ${port}`);
+});
+
+client.login(process.env.DISCORD_TOKEN);
