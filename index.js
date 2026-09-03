@@ -15,10 +15,8 @@ const client = new Client({
     ] 
 });
 
-// ID روم التقييمات
 const RATING_CHANNEL_ID = '1544823060580794520';
 
-// تسجيل أمر rate لكل سيرفر فوراً عند اشتغال البوت
 client.once('clientReady', async () => {
     console.log(`🚀 Ticket & Embed Dashboard is live at port ${port}`);
     console.log(`Logged in as ${client.user.tag}`);
@@ -37,7 +35,6 @@ client.once('clientReady', async () => {
     });
 });
 
-// صفحة لوحة التحكم الاحترافية مع نظام التذاكر
 app.get('/', (req, res) => {
     let guildOptions = '<option value="">-- اختر السيرفر والروم أولاً --</option>';
     client.guilds.cache.forEach(guild => {
@@ -65,7 +62,6 @@ app.get('/', (req, res) => {
                 .row > div { flex: 1; }
                 button { background-color: #6366f1; color: white; border: none; padding: 12px; font-size: 15px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 20px; }
                 button:hover { background-color: #4f46e5; }
-                
                 .discord-embed { background: #2f3136; border-left: 4px solid #5865F2; padding: 12px; border-radius: 4px; font-family: sans-serif; margin-top: 10px; font-size: 14px; }
                 .d-title { font-weight: bold; color: #fff; margin-bottom: 6px; font-size: 15px; }
                 .d-desc { color: #dcddde; font-size: 13px; white-space: pre-wrap; margin-bottom: 8px; }
@@ -77,18 +73,14 @@ app.get('/', (req, res) => {
                 <div class="panel">
                     <h2>🚀 لوحة تحكم المتجر والتذاكر</h2>
                     <form action="/send" method="POST">
-                        
                         <label>📌 اختر الروم في السيرفر لإرسال رسالة المتجر:</label>
                         <select name="channelId" required>
                             ${guildOptions}
                         </select>
-
                         <label>📝 Title (العنوان):</label>
                         <input type="text" name="title" id="inp-title" placeholder="عنوان الرسالة" value="NEXAS STORE 🚀">
-
                         <label>📄 Description (المحتوى):</label>
                         <textarea name="description" id="inp-desc" placeholder="اكتب تفاصيل المنتجات...">اضغط على الزر بالأسفل لفتح تذكرة أو استخدم أمر /rate للتقييم 👇</textarea>
-
                         <div class="row">
                             <div>
                                 <label>🎨 لون الـ Embed:</label>
@@ -99,19 +91,15 @@ app.get('/', (req, res) => {
                                 <input type="text" name="image" placeholder="رابط صورة">
                             </div>
                         </div>
-
                         <label>📌 Footer Text:</label>
                         <input type="text" name="footer" id="inp-footer" placeholder="حقوق المتجر" value="NEXAS Store Team">
-
                         <h3 style="margin-top: 15px; font-size: 14px; text-align: right;">🎫 نظام التذاكر</h3>
                         <label>
                             <input type="checkbox" name="addTicketButton" value="yes" checked> إرفاق زر "فتح تذكرة 🎫" تلقائياً مع الرسالة
                         </label>
-
                         <button type="submit">🚀 إرسال الرسالة مع زر التذاكر للسيرفر</button>
                     </form>
                 </div>
-
                 <div class="preview-box">
                     <h3>👀 معاينة حية (Live Preview)</h3>
                     <div class="discord-embed">
@@ -126,10 +114,8 @@ app.get('/', (req, res) => {
     `);
 });
 
-// استقبال طلب الإرسال من لوحة التحكم
 app.post('/send', async (req, res) => {
     const { channelId, title, description, color, image, footer, addTicketButton } = req.body;
-    
     try {
         const channel = await client.channels.fetch(channelId);
         if (!channel) return res.send('❌ الروم غير موجود!');
@@ -161,7 +147,6 @@ app.post('/send', async (req, res) => {
     }
 });
 
-// التفاعل مع الأزرار والتذاكر وأوامر السلاش
 client.on('interactionCreate', async interaction => {
     if (interaction.isButton() && interaction.customId === 'open_ticket') {
         try {
@@ -259,7 +244,6 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-// تشغيل السيرفر والبوت
 app.listen(port, () => {
     console.log(`Express server running on port ${port}`);
 });
