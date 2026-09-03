@@ -246,7 +246,7 @@ client.on('interactionCreate', async interaction => {
             .setColor('#7c3aed') // اللون البنفسجي
             .setDescription(`قام ${interaction.user} بـ **تقييم الخدمة** : ${starEmoji}\n\nرسالة من المشتري : ${comment}`)
             .setThumbnail(userAvatar)
-            .setFooter({ text: 'NEXAS STORE' });
+            .setFooter({ text: 'Rotation Store' });
 
         const bannerImageUrl = 'https://cdn.discordapp.com/attachments/1289291570234917007/1544880087621574826/Screenshot_30.png?ex=6a9a1d33&is=6a98cbb3&hm=fa6bca1c086721038bd95a2f15c2f537752baa191dcbfaa5ebf8dcd7ede3eff3&';
 
@@ -269,4 +269,3 @@ app.listen(port, () => {
 });
 
 client.login(process.env.DISCORD_TOKEN);
-
