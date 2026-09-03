@@ -1,7 +1,7 @@
 const { Client, GatewayIntentBits, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, PermissionFlagsBits, ModalBuilder, TextInputBuilder, TextInputStyle, SlashCommandBuilder } = require('discord.js');
 const express = require('express');
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -19,7 +19,7 @@ const RATING_CHANNEL_ID = '1544823060580794520';
 
 // تسجيل أمر rate لكل سيرفر فوراً عند اشتغال البوت
 client.once('ready', async () => {
-    console.log(`🚀 Ticket & Embed Dashboard is live at http://localhost:${port}`);
+    console.log(`🚀 Ticket & Embed Dashboard is live at port ${port}`);
     console.log(`Logged in as ${client.user.tag}`);
 
     const rateCommand = new SlashCommandBuilder()
@@ -195,7 +195,7 @@ client.on('interactionCreate', async interaction => {
             await interaction.reply({ content: `✅ تم إنشاء تذكرتك بنجاح: ${ticketChannel}`, ephemeral: true });
         } catch (error) {
             console.error(error);
-            interaction.reply({ content: '❌حدث خطأ أثناء إنشاء التذكرة.', ephemeral: true });
+            interaction.reply({ content: '❌ حدث خطأ أثناء إنشاء التذكرة.', ephemeral: true });
         }
     }
 
@@ -258,12 +258,9 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-// تشغيل السيرفر والبوت بالاعتماد على متغير البيئة الآمن
+// تشغيل السيرفر والبوت
 app.listen(port, () => {
     console.log(`Express server running on port ${port}`);
 });
 
 client.login(process.env.DISCORD_TOKEN);
-
-
-
