@@ -226,18 +226,21 @@ client.on('interactionCreate', async interaction => {
         const starEmoji = '⭐'.repeat(Math.min(Math.max(starCount, 1), 5));
 
         const embed = new EmbedBuilder()
-            .setTitle('تقييم جديد 🌟')
-            .setColor('#fbbf24')
+            .setTitle('تقييم جديد')
+            .setColor('#7c3aed') // اللون البنفسجي المطلوب
             .setDescription(`قام ${interaction.user} بـ **تقييم الخدمة** : ${starEmoji}\n\nرسالة من المشتري : ${comment}`)
             .setThumbnail(userAvatar)
-            .setImage('https://cdn.discordapp.com/attachments/1289291570234917007/1544880087621574826/Screenshot_30.png?ex=6a9a1d33&is=6a98cbb3&hm=fa6bca1c086721038bd95a2f15c2f537752baa191dcbfaa5ebf8dcd7ede3eff3&')
-            .setFooter({ text: 'Rotation Store', iconURL: interaction.guild.iconURL({ dynamic: true }) })
-            .setTimestamp();
+            .setFooter({ text: 'Rotation Store' });
+
+        const bannerImageUrl = 'https://cdn.discordapp.com/attachments/1289291570234917007/1544880087621574826/Screenshot_30.png?ex=6a9a1d33&is=6a98cbb3&hm=fa6bca1c086721038bd95a2f15c2f537752baa191dcbfaa5ebf8dcd7ede3eff3&';
 
         try {
             const ratingChannel = await client.channels.fetch(RATING_CHANNEL_ID);
             if (ratingChannel) {
+                // إرسال الـ Embed باللون البنفسجي أولاً
                 await ratingChannel.send({ embeds: [embed] });
+                // إرسال الصورة كرسالة منفصلة تحتها مباشرة
+                await ratingChannel.send({ content: bannerImageUrl });
             }
         } catch (err) {
             console.error('خطأ في إرسال التقييم:', err);
