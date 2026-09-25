@@ -64,7 +64,7 @@ app.get('/', (req, res) => {
         <html lang="ar" dir="rtl">
         <head>
             <meta charset="UTF-8">
-            <title>NEXAS STORE - Dashboard & Tickets</title>
+            <title>Rotation Store - Dashboard & Tickets</title>
             <style>
                 body { background-color: #0f172a; color: #f8fafc; font-family: Tahoma, sans-serif; margin: 0; padding: 20px; display: flex; justify-content: center; }
                 .wrapper { display: flex; gap: 20px; width: 1100px; max-width: 100%; }
@@ -94,7 +94,7 @@ app.get('/', (req, res) => {
                             ${guildOptions}
                         </select>
                         <label>📝 Title (العنوان):</label>
-                        <input type="text" name="title" id="inp-title" placeholder="عنوان الرسالة" value="NEXAS STORE 🚀">
+                        <input type="text" name="title" id="inp-title" placeholder="عنوان الرسالة" value="Rotation Store 🚀">
                         <label>📄 Description (المحتوى):</label>
                         <textarea name="description" id="inp-desc" placeholder="اكتب تفاصيل المنتجات...">اضغط على الزر بالأسفل لفتح تذكرة أو استخدم أمر /rate للتقييم 👇</textarea>
                         <div class="row">
@@ -108,7 +108,7 @@ app.get('/', (req, res) => {
                             </div>
                         </div>
                         <label>📌 Footer Text:</label>
-                        <input type="text" name="footer" id="inp-footer" placeholder="حقوق المتجر" value="NEXAS Store Team">
+                        <input type="text" name="footer" id="inp-footer" placeholder="حقوق المتجر" value="Rotation Store Team">
                         <h3 style="margin-top: 15px; font-size: 14px; text-align: right;">🎫 نظام التذاكر</h3>
                         <label>
                             <input type="checkbox" name="addTicketButton" value="yes" checked> إرفاق زر "فتح تذكرة 🎫" تلقائياً مع الرسالة
@@ -119,9 +119,9 @@ app.get('/', (req, res) => {
                 <div class="preview-box">
                     <h3>👀 معاينة حية (Live Preview)</h3>
                     <div class="discord-embed">
-                        <div class="d-title">NEXAS STORE 🚀</div>
+                        <div class="d-title">Rotation Store 🚀</div>
                         <div class="d-desc">اضغط على الزر بالأسفل لفتح تذكرة أو استخدم أمر /rate للتقييم 👇</div>
-                        <div class="d-footer">NEXAS Store Team</div>
+                        <div class="d-footer">Rotation Store Team</div>
                     </div>
                 </div>
             </div>
@@ -137,10 +137,10 @@ app.post('/send', async (req, res) => {
         if (!channel) return res.send('❌ الروم غير موجود!');
 
         const embed = new EmbedBuilder()
-            .setTitle(title || 'NEXAS STORE')
+            .setTitle(title || 'Rotation Store')
             .setDescription(description || '')
             .setColor(color || '#5865F2')
-            .setFooter({ text: footer || 'NEXAS Store' });
+            .setFooter({ text: footer || 'Rotation Store' });
 
         if (image) embed.setImage(image);
 
@@ -209,7 +209,7 @@ client.on('interactionCreate', async interaction => {
     if (interaction.isChatInputCommand() && interaction.commandName === 'rate') {
         const modal = new ModalBuilder()
             .setCustomId('rating_modal')
-            .setTitle('تقييم خدمات متجر NEXAS');
+            .setTitle('تقييم خدمات متجر Rotation');
 
         const productInput = new TextInputBuilder()
             .setCustomId('rating_product')
@@ -257,7 +257,7 @@ client.on('interactionCreate', async interaction => {
             .setThumbnail(userAvatar)
             .setFooter({ text: 'Rotation Store' });
 
-        const bannerImageUrl = 'https://cdn.discordapp.com/attachments/1289291570234917007/1544880087621574826/Screenshot_30.png?ex=6a9a1d33&is=6a98cbb3&hm=fa6bca1c086721038bd95a2f15c2f537752baa191dcbfaa5ebf8dcd7ede3eff3&';
+        const bannerImageUrl = 'https://media.discordapp.com/attachments/1002349393430716437/1544014585667788830/line.png?ex=6ab69b23&is=6ab549a3&hm=c325b147bfd3a8189a77108659c5a63c2feffa976063c1c70a93157b039d892f&=&format=webp&quality=lossless';
 
         try {
             const ratingChannel = await client.channels.fetch(RATING_CHANNEL_ID);
@@ -278,4 +278,3 @@ app.listen(port, () => {
 });
 
 client.login(process.env.DISCORD_TOKEN);
-
