@@ -15,7 +15,7 @@ const client = new Client({
     ] 
 });
 
-const RATING_CHANNEL_ID = '1544823060580794520'; // روم إرسال التقييمات النهائية
+const RATING_CHANNEL_ID = '1536360923256594493'; // روم إرسال التقييمات النهائية المحدث
 const AUTO_ROLE_ID = '1545079030108389557';
 
 client.once('clientReady', async () => {
@@ -203,7 +203,6 @@ client.on('interactionCreate', async interaction => {
         setTimeout(() => interaction.channel.delete().catch(() => {}), 5000);
     }
 
-    // أمر /rate لإرسال رسالة التقييم مع 5 أزرار للنجوم كما طلبت
     if (interaction.isChatInputCommand() && interaction.commandName === 'rate') {
         const embed = new EmbedBuilder()
             .setTitle('🌟 كيف كانت تجربتك معنا؟')
@@ -212,7 +211,6 @@ client.on('interactionCreate', async interaction => {
             .setImage('https://media.discordapp.net/attachments/1002349393430716437/1544014585667788830/line.png?ex=6ab69b23&is=6ab549a3&hm=c325b147bfd3a8189a77108659c5a63c2feffa976063c1c70a93157b039d892f&=&format=webp&quality=lossless')
             .setFooter({ text: 'Rotation Store Team' });
 
-        // إنشاء 5 أزرار للنجوم (كل زر يحمل قيمة النجوم الخاصة به)
         const row = new ActionRowBuilder().addComponents(
             new ButtonBuilder().setCustomId('rate_1').setLabel('⭐').setStyle(ButtonStyle.Primary),
             new ButtonBuilder().setCustomId('rate_2').setLabel('⭐⭐').setStyle(ButtonStyle.Primary),
@@ -224,9 +222,8 @@ client.on('interactionCreate', async interaction => {
         await interaction.reply({ embeds: [embed], components: [row] });
     }
 
-    // عندما يضغط العضو على أي زر من أزرار التقييم
     if (interaction.isButton() && interaction.customId.startsWith('rate_')) {
-        const starsCount = interaction.customId.replace('rate_', ''); // استخراج عدد النجوم (1 إلى 5)
+        const starsCount = interaction.customId.replace('rate_', '');
 
         const modal = new ModalBuilder()
             .setCustomId(`rating_modal_${starsCount}`)
@@ -254,7 +251,6 @@ client.on('interactionCreate', async interaction => {
         await interaction.showModal(modal);
     }
 
-    // استقبال البيانات بعد كتابتها في النافذة وإرسالها لروم التقييمات
     if (interaction.isModalSubmit() && interaction.customId.startsWith('rating_modal_')) {
         const starsCount = interaction.customId.split('_')[2];
         const product = interaction.fields.getTextInputValue('rating_product');
