@@ -211,6 +211,13 @@ client.on('interactionCreate', async interaction => {
             .setCustomId('rating_modal')
             .setTitle('تقييم خدمات متجر NEXAS');
 
+        const productInput = new TextInputBuilder()
+            .setCustomId('rating_product')
+            .setLabel('اسم المنتج الذي قمت بشرائه 📦')
+            .setStyle(TextInputStyle.Short)
+            .setPlaceholder('مثال: كرتونيد / رتبة ديسكورد')
+            .setRequired(true);
+
         const ratingInput = new TextInputBuilder()
             .setCustomId('rating_stars')
             .setLabel('قيمنا من 1 إلى 5 نجوم ⭐')
@@ -226,6 +233,7 @@ client.on('interactionCreate', async interaction => {
             .setRequired(false);
 
         modal.addComponents(
+            new ActionRowBuilder().addComponents(productInput),
             new ActionRowBuilder().addComponents(ratingInput),
             new ActionRowBuilder().addComponents(commentInput)
         );
@@ -234,6 +242,7 @@ client.on('interactionCreate', async interaction => {
     }
 
     if (interaction.isModalSubmit() && interaction.customId === 'rating_modal') {
+        const product = interaction.fields.getTextInputValue('rating_product');
         const stars = interaction.fields.getTextInputValue('rating_stars');
         const comment = interaction.fields.getTextInputValue('rating_comment') || 'لا يوجد تعليق';
         const userAvatar = interaction.user.displayAvatarURL({ dynamic: true, size: 512 });
@@ -244,7 +253,7 @@ client.on('interactionCreate', async interaction => {
         const embed = new EmbedBuilder()
             .setTitle('تقييم جديد')
             .setColor('#7c3aed') // اللون البنفسجي
-            .setDescription(`قام ${interaction.user} بـ **تقييم الخدمة** : ${starEmoji}\n\nرسالة من المشتري : ${comment}`)
+            .setDescription(`قام ${interaction.user} بـ **تقييم الخدمة** : ${starEmoji}\n\n📦 **المنتج:** ${product}\n💬 **رأي المشتري:** ${comment}`)
             .setThumbnail(userAvatar)
             .setFooter({ text: 'Rotation Store' });
 
@@ -269,3 +278,4 @@ app.listen(port, () => {
 });
 
 client.login(process.env.DISCORD_TOKEN);
+
