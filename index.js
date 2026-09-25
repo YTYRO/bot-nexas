@@ -11,12 +11,12 @@ const client = new Client({
         GatewayIntentBits.Guilds, 
         GatewayIntentBits.GuildMessages, 
         GatewayIntentBits.MessageContent,
-        GatewayIntentBits.GuildMembers // مهم جداً لدخول الأعضاء الجدد
+        GatewayIntentBits.GuildMembers
     ] 
 });
 
-const RATING_CHANNEL_ID = '1544823060580794520';
-const AUTO_ROLE_ID = '1545079030108389557'; // ID الرتبة التلقائية للأعضاء الجدد
+const RATING_CHANNEL_ID = '1544823060580794520'; // روم إرسال التقييمات النهائية
+const AUTO_ROLE_ID = '1545079030108389557';
 
 client.once('clientReady', async () => {
     console.log(`🚀 Ticket & Embed Dashboard is live at port ${port}`);
@@ -24,7 +24,7 @@ client.once('clientReady', async () => {
 
     const rateCommand = new SlashCommandBuilder()
         .setName('rate')
-        .setDescription('إنشاء تقييم جديد للخدمة');
+        .setDescription('إرسال رسالة التقييم مع أزرار النجوم');
 
     client.guilds.cache.forEach(async guild => {
         try {
@@ -36,15 +36,12 @@ client.once('clientReady', async () => {
     });
 });
 
-// حدث دخول عضو جديد لإعطائه الرتبة تلقائياً
 client.on('guildMemberAdd', async member => {
     try {
         const role = member.guild.roles.cache.get(AUTO_ROLE_ID);
         if (role) {
             await member.roles.add(role);
             console.log(`✅ تمت إضافة الرتبة ${role.name} للعضو ${member.user.tag}`);
-        } else {
-            console.log(`❌ لم يتم العثور على الرتبة بالـ ID المرفق.`);
         }
     } catch (error) {
         console.error('خطأ أثناء إعطاء الرتبة التلقائية للعضو:', error);
@@ -96,7 +93,7 @@ app.get('/', (req, res) => {
                         <label>📝 Title (العنوان):</label>
                         <input type="text" name="title" id="inp-title" placeholder="عنوان الرسالة" value="Rotation Store 🚀">
                         <label>📄 Description (المحتوى):</label>
-                        <textarea name="description" id="inp-desc" placeholder="اكتب تفاصيل المنتجات...">اضغط على الزر بالأسفل لفتح تذكرة أو استخدم أمر /rate للتقييم 👇</textarea>
+                        <textarea name="description" id="inp-desc" placeholder="اكتب تفاصيل المنتجات...">اضغط على الزر بالأسفل لفتح تذكرة 👇</textarea>
                         <div class="row">
                             <div>
                                 <label>🎨 لون الـ Embed:</label>
@@ -120,7 +117,7 @@ app.get('/', (req, res) => {
                     <h3>👀 معاينة حية (Live Preview)</h3>
                     <div class="discord-embed">
                         <div class="d-title">Rotation Store 🚀</div>
-                        <div class="d-desc">اضغط على الزر بالأسفل لفتح تذكرة أو استخدم أمر /rate للتقييم 👇</div>
+                        <div class="d-desc">اضغط على الزر بالأسفل لفتح تذكرة 👇</div>
                         <div class="d-footer">Rotation Store Team</div>
                     </div>
                 </div>
@@ -206,9 +203,33 @@ client.on('interactionCreate', async interaction => {
         setTimeout(() => interaction.channel.delete().catch(() => {}), 5000);
     }
 
+    // أمر /rate لإرسال رسالة التقييم مع 5 أزرار للنجوم كما طلبت
     if (interaction.isChatInputCommand() && interaction.commandName === 'rate') {
+        const embed = new EmbedBuilder()
+            .setTitle('🌟 كيف كانت تجربتك معنا؟')
+            .setDescription('اضغط على عدد النجوم لتقييم الخدمة من 1 إلى 5 ⭐.\nتقييمك يساهم في تحسين الجودة والخدمة المقدمة لك! 🤍')
+            .setColor('#7c3aed')
+            .setImage('https://media.discordapp.net/attachments/1002349393430716437/1544014585667788830/line.png?ex=6ab69b23&is=6ab549a3&hm=c325b147bfd3a8189a77108659c5a63c2feffa976063c1c70a93157b039d892f&=&format=webp&quality=lossless')
+            .setFooter({ text: 'Rotation Store Team' });
+
+        // إنشاء 5 أزرار للنجوم (كل زر يحمل قيمة النجوم الخاصة به)
+        const row = new ActionRowBuilder().addComponents(
+            new ButtonBuilder().setCustomId('rate_1').setLabel('⭐').setStyle(ButtonStyle.Primary),
+            new ButtonBuilder().setCustomId('rate_2').setLabel('⭐⭐').setStyle(ButtonStyle.Primary),
+            new ButtonBuilder().setCustomId('rate_3').setLabel('⭐⭐⭐').setStyle(ButtonStyle.Primary),
+            new ButtonBuilder().setCustomId('rate_4').setLabel('⭐⭐⭐⭐').setStyle(ButtonStyle.Primary),
+            new ButtonBuilder().setCustomId('rate_5').setLabel('⭐⭐⭐⭐⭐').setStyle(ButtonStyle.Primary)
+        );
+
+        await interaction.reply({ embeds: [embed], components: [row] });
+    }
+
+    // عندما يضغط العضو على أي زر من أزرار التقييم
+    if (interaction.isButton() && interaction.customId.startsWith('rate_')) {
+        const starsCount = interaction.customId.replace('rate_', ''); // استخراج عدد النجوم (1 إلى 5)
+
         const modal = new ModalBuilder()
-            .setCustomId('rating_modal')
+            .setCustomId(`rating_modal_${starsCount}`)
             .setTitle('تقييم خدمات متجر Rotation');
 
         const productInput = new TextInputBuilder()
@@ -216,13 +237,6 @@ client.on('interactionCreate', async interaction => {
             .setLabel('اسم المنتج الذي قمت بشرائه 📦')
             .setStyle(TextInputStyle.Short)
             .setPlaceholder('مثال: كرتونيد / رتبة ديسكورد')
-            .setRequired(true);
-
-        const ratingInput = new TextInputBuilder()
-            .setCustomId('rating_stars')
-            .setLabel('قيمنا من 1 إلى 5 نجوم ⭐')
-            .setStyle(TextInputStyle.Short)
-            .setPlaceholder('مثال: 5')
             .setRequired(true);
 
         const commentInput = new TextInputBuilder()
@@ -234,30 +248,29 @@ client.on('interactionCreate', async interaction => {
 
         modal.addComponents(
             new ActionRowBuilder().addComponents(productInput),
-            new ActionRowBuilder().addComponents(ratingInput),
             new ActionRowBuilder().addComponents(commentInput)
         );
 
         await interaction.showModal(modal);
     }
 
-    if (interaction.isModalSubmit() && interaction.customId === 'rating_modal') {
+    // استقبال البيانات بعد كتابتها في النافذة وإرسالها لروم التقييمات
+    if (interaction.isModalSubmit() && interaction.customId.startsWith('rating_modal_')) {
+        const starsCount = interaction.customId.split('_')[2];
         const product = interaction.fields.getTextInputValue('rating_product');
-        const stars = interaction.fields.getTextInputValue('rating_stars');
         const comment = interaction.fields.getTextInputValue('rating_comment') || 'لا يوجد تعليق';
         const userAvatar = interaction.user.displayAvatarURL({ dynamic: true, size: 512 });
 
-        const starCount = parseInt(stars) || 5;
-        const starEmoji = '⭐'.repeat(Math.min(Math.max(starCount, 1), 5));
+        const starEmoji = '⭐'.repeat(parseInt(starsCount));
 
         const embed = new EmbedBuilder()
             .setTitle('تقييم جديد')
-            .setColor('#7c3aed') // اللون البنفسجي
+            .setColor('#7c3aed')
             .setDescription(`قام ${interaction.user} بـ **تقييم الخدمة** : ${starEmoji}\n\n📦 **المنتج:** ${product}\n💬 **رأي المشتري:** ${comment}`)
             .setThumbnail(userAvatar)
             .setFooter({ text: 'Rotation Store' });
 
-        const bannerImageUrl = 'https://media.discordapp.com/attachments/1002349393430716437/1544014585667788830/line.png?ex=6ab69b23&is=6ab549a3&hm=c325b147bfd3a8189a77108659c5a63c2feffa976063c1c70a93157b039d892f&=&format=webp&quality=lossless';
+        const bannerImageUrl = 'https://media.discordapp.net/attachments/1002349393430716437/1544014585667788830/line.png?ex=6ab69b23&is=6ab549a3&hm=c325b147bfd3a8189a77108659c5a63c2feffa976063c1c70a93157b039d892f&=&format=webp&quality=lossless';
 
         try {
             const ratingChannel = await client.channels.fetch(RATING_CHANNEL_ID);
